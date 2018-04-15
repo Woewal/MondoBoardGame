@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Xml;
 using System.Linq;
+using System.IO;
 
 public class TilesToXML : MonoBehaviour {
 
@@ -31,6 +32,6 @@ public class TilesToXML : MonoBehaviour {
 
     string GetFilePath(string name)
     {
-        return string.Format("{0}/Export/{1}.xml", Application.dataPath, name);
+        return string.Format("{0}/Export/TileData/{1}.xml", Application.dataPath, name);
     }
 }

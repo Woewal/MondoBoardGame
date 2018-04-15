@@ -7,7 +7,7 @@ public class TileGenerator : MonoBehaviour
 {
 
     GameObject newTile;
-    public static int TileSize = 8;
+    public static float TileSize = 1;
 
     [SerializeField] Material desertMaterial;
     [SerializeField] Material forestMaterial;
@@ -20,7 +20,7 @@ public class TileGenerator : MonoBehaviour
 
     public GameObject GenerateTile(TileData tile)
     {
-        newTile = new GameObject("Tile");
+        newTile = new GameObject(tile.name);
         GenerateTriangles(tile.triangles);
 
         return newTile;
@@ -33,16 +33,15 @@ public class TileGenerator : MonoBehaviour
             GameObject triangleGameObject = new GameObject("Triangle", typeof(MeshRenderer), typeof(MeshFilter));
 
             Mesh mesh = triangleGameObject.GetComponent<MeshFilter>().mesh;
-            mesh.vertices = GetPoints(triangle.side);
+
+            var points = GetPoints(triangle.side);
+            mesh.vertices = points;
             mesh.triangles = new int[] { 0, 1, 2 };
 
             var meshRenderer = triangleGameObject.GetComponent<MeshRenderer>();
             meshRenderer.material = GetMaterial(triangle.biome);
 
-            var polygonCollider = triangleGameObject.AddComponent<PolygonCollider2D>();
-            polygonCollider.points = Get2DPoints(triangle.side);
-
-            SetObjects(triangle, polygonCollider, triangleGameObject);
+            SetObjects(triangle, points, triangleGameObject);
 
             triangleGameObject.transform.SetParent(newTile.transform);
         }
@@ -52,19 +51,19 @@ public class TileGenerator : MonoBehaviour
     {
         if (side == TileData.Triangle.Side.Up)
         {
-            return new Vector3[] { new Vector3(0, TileSize, 0), new Vector3(TileSize, TileSize, 0), new Vector3(TileSize / 2, TileSize / 2, 0) };
+            return new Vector3[] { new Vector3(0, 0, TileSize), new Vector3(TileSize, 0, TileSize), new Vector3(TileSize / 2, 0, TileSize / 2) };
         }
         else if (side == TileData.Triangle.Side.Right)
         {
-            return new Vector3[] { new Vector3(TileSize, TileSize, 0), new Vector3(TileSize, 0, 0), new Vector3(TileSize / 2, TileSize / 2, 0) };
+            return new Vector3[] { new Vector3(TileSize, 0, TileSize), new Vector3(TileSize, 0, 0), new Vector3(TileSize / 2, 0, TileSize / 2) };
         }
         else if (side == TileData.Triangle.Side.Down)
         {
-            return new Vector3[] { new Vector3(TileSize, 0, 0), new Vector3(0, 0, 0), new Vector3(TileSize / 2, TileSize / 2, 0) };
+            return new Vector3[] { new Vector3(TileSize, 0, 0), new Vector3(0, 0, 0), new Vector3(TileSize / 2, 0, TileSize / 2) };
         }
         else
         {
-            return new Vector3[] { new Vector3(0, 0, 0), new Vector3(0, TileSize, 0), new Vector3(TileSize / 2, TileSize / 2, 0) };
+            return new Vector3[] { new Vector3(0, 0, 0), new Vector3(0, 0, TileSize), new Vector3(TileSize / 2, 0, TileSize / 2) };
         }
     }
 
@@ -108,7 +107,7 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    void SetObjects(TileData.Triangle triangle, PolygonCollider2D polygonCollider, GameObject parent)
+    void SetObjects(TileData.Triangle triangle, Vector3[] points, GameObject parent)
     {
         if (triangle.biome == TileData.Triangle.Biome.Water)
         {
@@ -119,13 +118,12 @@ public class TileGenerator : MonoBehaviour
         PoissonDiscSampler poisson = new PoissonDiscSampler(TileSize, TileSize, density);
         foreach (var sample in poisson.Samples())
         {
-            if (PointInTriangle(sample, polygonCollider.points[0], polygonCollider.points[1], polygonCollider.points[2]))
+            if (PointInTriangle(new Vector3(sample.x, 0, sample.y), points[0], points[1], points[2]))
             {
                 var objectGameObject = Instantiate(GetObject(triangle.biome), parent.transform);
-                objectGameObject.transform.Rotate(new Vector3(-90, 0, 0));
                 objectGameObject.transform.Rotate(new Vector3(0, UnityEngine.Random.Range(0,360), 0));
-                objectGameObject.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
-                objectGameObject.transform.position = sample;
+                objectGameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+                objectGameObject.transform.position = new Vector3(sample.x, 0, sample.y);
             }
 
         }
@@ -152,31 +150,31 @@ public class TileGenerator : MonoBehaviour
     {
         if (triangle.biome == TileData.Triangle.Biome.Desert)
         {
-            return 0.9f;
+            return 0.15f;
         }
         else if (triangle.biome == TileData.Triangle.Biome.Forest)
         {
-            return 0.65f;
+            return 0.085f;
         }
         else if (triangle.biome == TileData.Triangle.Biome.Plains)
         {
-            return 0.9f;
+            return 0.15f;
         }
         else
         {
-            return 0.9f;
+            return 0.09f;
         }
     }
 
-    private bool PointInTriangle(Vector2 p, Vector2 p0, Vector2 p1, Vector2 p2)
+    private bool PointInTriangle(Vector3 p, Vector3 p0, Vector3 p1, Vector3 p2)
     {
-        var s = p0.y * p2.x - p0.x * p2.y + (p2.y - p0.y) * p.x + (p0.x - p2.x) * p.y;
-        var t = p0.x * p1.y - p0.y * p1.x + (p0.y - p1.y) * p.x + (p1.x - p0.x) * p.y;
+        var s = p0.z * p2.x - p0.x * p2.z + (p2.z - p0.z) * p.x + (p0.x - p2.x) * p.z;
+        var t = p0.x * p1.z - p0.z * p1.x + (p0.z - p1.z) * p.x + (p1.x - p0.x) * p.z;
 
         if ((s < 0) != (t < 0))
             return false;
 
-        var A = -p1.y * p2.x + p0.y * (p2.x - p1.x) + p0.x * (p1.y - p2.y) + p1.x * p2.y;
+        var A = -p1.z * p2.x + p0.z * (p2.x - p1.x) + p0.x * (p1.z - p2.z) + p1.x * p2.z;
         if (A < 0.0)
         {
             s = -s;

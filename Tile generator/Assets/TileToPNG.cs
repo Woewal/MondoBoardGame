@@ -11,7 +11,7 @@ public class TileToPNG : MonoBehaviour
     {
         Instance = this;
         camera = GetComponent<Camera>();
-        camera.transform.position = new Vector3(TileGenerator.TileSize / 2, TileGenerator.TileSize / 2, camera.transform.position.z);
+        camera.transform.position = new Vector3(TileGenerator.TileSize / 2, camera.transform.position.y, TileGenerator.TileSize / 2);
     }
 
     public IEnumerator GeneratePNGs(int amount)
@@ -19,7 +19,7 @@ public class TileToPNG : MonoBehaviour
         int index = 0;
         do
         {
-            camera.transform.position = new Vector3(index * TileGenerator.TileSize + TileGenerator.TileSize / 2 + 1 * index, TileGenerator.TileSize / 2, camera.transform.position.z);
+            camera.transform.position = new Vector3(index * TileGenerator.TileSize + TileGenerator.TileSize / 2 + 1 * index, camera.transform.position.y, TileGenerator.TileSize / 2);
 
             RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 24);
             camera.targetTexture = rt;
@@ -31,7 +31,7 @@ public class TileToPNG : MonoBehaviour
             RenderTexture.active = null; // JC: added to avoid errors
             Destroy(rt);
             byte[] bytes = screenShot.EncodeToPNG();
-            string filename = ScreenShotName("Tile" + index);
+            string filename = ScreenShotName("Tile" + (index + 1));
             System.IO.File.WriteAllBytes(filename, bytes);
 
             index++;
