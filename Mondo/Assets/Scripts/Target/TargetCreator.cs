@@ -5,18 +5,17 @@ using Vuforia;
 
 public class TargetCreator : MonoBehaviour
 {
-
-    [SerializeField]
-    GameObject targetPrefab;
+    public List<TileData> tiles;
 
     [SerializeField]
     string databaseName;
 
+    [SerializeField] GameObject augmentationObject;
+
     private void Start()
     {
+        //Debug.Log(tiles.Count);
         //VuforiaARController.Instance.RegisterVuforiaStartedCallback(CreateTargets);
-
-
     }
 
     public void CreateTargets()
@@ -58,24 +57,28 @@ public class TargetCreator : MonoBehaviour
                     // change generic name to include trackable name
                     tb.gameObject.name = ++counter + ":DynamicImageTarget-" + tb.TrackableName;
 
+                    tb.gameObject.AddComponent<Target>();
+
                     // add additional script components for trackable
-                    tb.gameObject.AddComponent<DefaultTrackableEventHandler>();
+                    var trackableEventHandler = tb.gameObject.AddComponent<DefaultTrackableEventHandler>();
                     tb.gameObject.AddComponent<TurnOffBehaviour>();
 
-                    if (targetPrefab != null)
+                    if (augmentationObject != null)
                     {
                         // instantiate augmentation object and parent to trackable
-                        GameObject augmentation = (GameObject)GameObject.Instantiate(targetPrefab);
+                        GameObject augmentation = (GameObject)GameObject.Instantiate(augmentationObject);
                         augmentation.transform.parent = tb.gameObject.transform;
                         augmentation.transform.localPosition = new Vector3(0f, 0f, 0f);
                         augmentation.transform.localRotation = Quaternion.identity;
-                        augmentation.transform.localScale = new Vector3(0.005f, 0.005f, 0.005f);
+                        augmentation.transform.localScale = new Vector3(1f, 1f, 1f);
                         augmentation.gameObject.SetActive(true);
                     }
                     else
                     {
                         Debug.Log("<color=yellow>Warning: No augmentation object specified for: " + tb.TrackableName + "</color>");
                     }
+
+                    trackableEventHandler.OnTrackableStateChanged(TrackableBehaviour.Status.DETECTED, TrackableBehaviour.Status.NOT_FOUND);
                 }
             }
         }

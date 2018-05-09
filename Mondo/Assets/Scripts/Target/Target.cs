@@ -5,7 +5,9 @@ using System;
 
 public class Target : MonoBehaviour {
 
-    private const int tileWidth = 100;
+    private const int tileWidth = 1;
+
+    public TileData TileData;
 
     public Action OnTargetFound;
     public Action OnTargetLost;

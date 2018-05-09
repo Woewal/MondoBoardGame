@@ -28,6 +28,7 @@ public class TileManager : MonoBehaviour {
         StartCoroutine(TileToPNG.Instance.GeneratePNGs(tiles.Count));
         xmlProcessor.ProcessTiles(tiles);
         ExportTilesToPrefab();
+        //ExportTileData();
     }
 
     private void GenerateTile(TileData tile, int index)
@@ -44,5 +45,11 @@ public class TileManager : MonoBehaviour {
             string mlam = string.Format("Assets/Export/Prefabs/{0}.prefab", tile.name);
             PrefabUtility.CreatePrefab(mlam, tile);
         }
+    }
+
+    private void ExportTileData()
+    {
+        FileUtil.DeleteFileOrDirectory(Application.dataPath + "/Export/TileData/");
+        FileUtil.CopyFileOrDirectory(Application.dataPath + "/Tiles", Application.dataPath + "/Export/TileData/");
     }
 }

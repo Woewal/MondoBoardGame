@@ -8,6 +8,7 @@ Confidential and Proprietary - Protected under copyright and other laws.
 
 using UnityEngine;
 using Vuforia;
+using UnityEngine.UI;
 
 /// <summary>
 ///     A custom handler that implements the ITrackableEventHandler interface.
@@ -18,7 +19,7 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
 
     protected TrackableBehaviour mTrackableBehaviour;
 
-    private Target target;
+    Target target;
 
     #endregion // PRIVATE_MEMBER_VARIABLES
 
@@ -26,7 +27,6 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
 
     protected virtual void Start()
     {
-        target = GetComponent<Target>();
         mTrackableBehaviour = GetComponent<TrackableBehaviour>();
         if (mTrackableBehaviour)
             mTrackableBehaviour.RegisterTrackableEventHandler(this);
@@ -48,13 +48,13 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
             newStatus == TrackableBehaviour.Status.TRACKED ||
             newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
         {
-            Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
+            //Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
             OnTrackingFound();
         }
         else if (previousStatus == TrackableBehaviour.Status.TRACKED &&
                  newStatus == TrackableBehaviour.Status.NOT_FOUND)
         {
-            Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
+            //Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
             OnTrackingLost();
         }
         else
@@ -88,12 +88,15 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
         foreach (var component in canvasComponents)
             component.enabled = true;
 
-        TargetTracker.Instance.AddTarget(target);
-        if (target != null)
+        if(target == null)
         {
-            //target.OnTargetFound();
+            target = GetComponent<Target>();
         }
-        
+
+        if (!TargetTracker.Instance.FoundTargets.Contains(target))
+        {
+            TargetTracker.Instance.AddTarget(target);
+        }
     }
 
 
@@ -115,10 +118,6 @@ public class DefaultTrackableEventHandler : MonoBehaviour, ITrackableEventHandle
         foreach (var component in canvasComponents)
             component.enabled = false;
 
-        if (target != null)
-        {
-            //target.OnTargetLost();
-        }
     }
 
     #endregion // PRIVATE_METHODS

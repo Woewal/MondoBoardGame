@@ -25,13 +25,22 @@ public class TargetProcessor : MonoBehaviour {
             tiles[Mathf.Abs(coordinate.X - lowestX), Mathf.Abs(coordinate.Z - lowestZ)] = CreateTile(target); 
         }
 
+        for(int x = 0; x < tiles.GetLength(0); x++)
+        {
+            for (int z = 0; z < tiles.GetLength(1); z++)
+            {
+                tiles[x, z].X += Mathf.Abs(lowestX);
+                tiles[x, z].Z += Mathf.Abs(lowestZ);
+            }
+        }
+
         SceneManager.LoadScene("ScoreScreen");
         SceneManager.sceneLoaded += VisualizeTiles;
     }
 
     void VisualizeTiles(Scene scene, LoadSceneMode mode)
     {
-        GameObject.FindObjectOfType<IslandVisualizer>().Visualize(tiles);
+        GameObject.FindObjectOfType<IslandManager>().Visualize(tiles);
         SceneManager.sceneLoaded -= VisualizeTiles;
     }
 
@@ -56,12 +65,21 @@ public class TargetProcessor : MonoBehaviour {
         return new Coordinate(x, z);
     }
 
+    private int GetRotation(float rotation)
+    {
+        return (int)Mathf.Round(rotation / 90) * 90;
+    }
+
     private Tile CreateTile(Target target)
     {
         var newTile = new Tile();
         var coordinate = GetCoordinate(target.transform.position);
 
-        newTile.X = coordinate.X; newTile.Z = coordinate.Z;        
+        newTile.X = coordinate.X; newTile.Z = coordinate.Z;
+
+        newTile.rotation = GetRotation(target.transform.rotation.eulerAngles.y);
+
+        newTile.tileData = target.TileData;
 
         return newTile;
     }
