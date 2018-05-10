@@ -21,7 +21,7 @@ public class TargetProcessor : MonoBehaviour {
 
         foreach(var target in targets)
         {
-            var coordinate = GetCoordinate(target.transform.position);
+            var coordinate = target.GetCoordinate();
             tiles[Mathf.Abs(coordinate.X - lowestX), Mathf.Abs(coordinate.Z - lowestZ)] = CreateTile(target); 
         }
 
@@ -29,8 +29,8 @@ public class TargetProcessor : MonoBehaviour {
         {
             for (int z = 0; z < tiles.GetLength(1); z++)
             {
-                tiles[x, z].X += Mathf.Abs(lowestX);
-                tiles[x, z].Z += Mathf.Abs(lowestZ);
+                tiles[x, z].x += Mathf.Abs(lowestX);
+                tiles[x, z].z += Mathf.Abs(lowestZ);
             }
         }
 
@@ -46,7 +46,7 @@ public class TargetProcessor : MonoBehaviour {
 
     private void SetMinAndMax(ref int lowestX, ref int highestX, ref int lowestZ, ref int highestZ, Target target)
     {
-        var coordinate = GetCoordinate(target.transform.position);
+        var coordinate = target.GetCoordinate();
         if (coordinate.X < lowestX)
             lowestX = coordinate.X;
         else if (coordinate.X > highestX)
@@ -56,28 +56,15 @@ public class TargetProcessor : MonoBehaviour {
         else if (coordinate.Z > highestZ)
             highestZ = coordinate.Z;
     }
-
-    private Coordinate GetCoordinate(Vector3 position)
-    {
-        int x = (int)(Mathf.Round(position.x / tileSize) * tileSize);
-        int z = (int)(Mathf.Round(position.z / tileSize) * tileSize);
-
-        return new Coordinate(x, z);
-    }
-
-    private int GetRotation(float rotation)
-    {
-        return (int)Mathf.Round(rotation / 90) * 90;
-    }
-
+    
     private Tile CreateTile(Target target)
     {
         var newTile = new Tile();
-        var coordinate = GetCoordinate(target.transform.position);
+        var coordinate = target.GetCoordinate();
 
-        newTile.X = coordinate.X; newTile.Z = coordinate.Z;
+        newTile.x = coordinate.X; newTile.z = coordinate.Z;
 
-        newTile.rotation = GetRotation(target.transform.rotation.eulerAngles.y);
+        newTile.rotation = target.GetRotation();
 
         newTile.tileData = target.TileData;
 

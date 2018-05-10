@@ -78,7 +78,7 @@ public class TargetCreator : MonoBehaviour
                         Debug.Log("<color=yellow>Warning: No augmentation object specified for: " + tb.TrackableName + "</color>");
                     }
 
-                    trackableEventHandler.OnTrackableStateChanged(TrackableBehaviour.Status.DETECTED, TrackableBehaviour.Status.NOT_FOUND);
+                    trackableEventHandler.OnTrackableStateChanged(TrackableBehaviour.Status.DETECTED, TrackableBehaviour.Status.NO_POSE);
                 }
             }
         }

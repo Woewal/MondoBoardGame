@@ -8,11 +8,14 @@ public class TileVisualizer : MonoBehaviour
 
     private void Start()
     {
-        name = tile.id.ToString();    
+        //name = tile.id.ToString();    
     }
 
     void OnDrawGizmosSelected()
     {
+        if (tile == null)
+            return;
+
         for (int dir = 0; dir < 360; dir += 90)
         {
             Vector3 direction = Vector3.zero;

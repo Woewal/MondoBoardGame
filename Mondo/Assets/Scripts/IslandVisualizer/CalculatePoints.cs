@@ -17,8 +17,7 @@ public class CalculatePoints : MonoBehaviour
     private List<Node> mistakeNodes = new List<Node>();
 
     private List<Island> islands = new List<Island>();
-
-    int score = 0;
+    
     [SerializeField] Text scoreText;
     int mistakeAmount = 0;
 
@@ -26,21 +25,33 @@ public class CalculatePoints : MonoBehaviour
     private void Start()
     {
         islandManager = GetComponent<IslandManager>();
+
+        if (islandManager.tiles == null)
+            GenerateDebugTiles();
+
+
         tiles = islandManager.tiles;
 
         CreateNodes();
+        
         Calculate();
+    }
+
+    void GenerateDebugTiles()
+    {
+        GetComponent<DebugTileGenerator>().GenerateDebugTiles();
     }
 
     private void Calculate()
     {
         SetAllNodeConnections();
+        
         GetIslands();
-        scoreText.text = string.Format("Connecting tiles: {0}, Mistakes: {1}, Complete islands:{2}", score, mistakeAmount, islands.Count);
+        scoreText.text = string.Format("Mistakes: {0}, Complete islands:{1}", mistakeAmount, islands.Count);
 
         foreach(var island in islands)
         {
-            Debug.Log(island.biome);
+            Debug.Log(island.biome + " " + island.size);
         }
     }
 
@@ -51,11 +62,12 @@ public class CalculatePoints : MonoBehaviour
             var node = openNodes[0];
 
             GetIsland(node);
-            
-            openNodes.Remove(node);
-            closedNodes.Add(node);
         }
+
+        //GetIsland(openNodes[0]);
     }
+
+    //Suffering is eternal
 
     void GetIsland(Node node)
     {
@@ -70,6 +82,8 @@ public class CalculatePoints : MonoBehaviour
 
             if (nodes == null)
             {
+                closedNodes.Add(node);
+                openNodes.Remove(node);
                 return;
             }
 
@@ -79,17 +93,22 @@ public class CalculatePoints : MonoBehaviour
                 {
                     openNeighbouringNodes.Add(neighbour);
                 }
-            }
 
+                closedNodes.Add(neighbour);
+                openNodes.Remove(neighbour);
+            }
+            
             closedNeighbouringNodes.Add(openNeighbouringNodes[0]);
             openNeighbouringNodes.Remove(openNeighbouringNodes[0]);
         }
 
         var island = new Island();
         island.biome = node.biome;
-
+        island.size = closedNeighbouringNodes.Count;
         islands.Add(island);
 
+        closedNodes.Add(node);
+        openNodes.Remove(node);
     }
 
     private void SetAllNodeConnections()
@@ -101,6 +120,7 @@ public class CalculatePoints : MonoBehaviour
             {
                 openNodes.Remove(verticalNode);
                 closedNodes.Add(verticalNode);
+                mistakeAmount++;
             }
         }
         foreach (var horizontalNode in horizontalNodes)
@@ -110,6 +130,7 @@ public class CalculatePoints : MonoBehaviour
             {
                 openNodes.Remove(horizontalNode);
                 closedNodes.Add(horizontalNode);
+                mistakeAmount++;
             }
         }
     }
@@ -118,9 +139,9 @@ public class CalculatePoints : MonoBehaviour
     {
         if (node.Orientation == Node.NodeOrientation.Horizontal)
         {
-            if (node.NeighbouringTiles[0].GetBiome(90) == node.NeighbouringTiles[1].GetBiome(270))
+            if (node.NeighbouringTiles[0].GetBiome(180) == node.NeighbouringTiles[1].GetBiome(0))
             {
-                return node.NeighbouringTiles[0].GetBiome(90);
+                return node.NeighbouringTiles[0].GetBiome(180);
             }
             else
             {
@@ -129,9 +150,9 @@ public class CalculatePoints : MonoBehaviour
         }
         if (node.Orientation == Node.NodeOrientation.Vertical)
         {
-            if (node.NeighbouringTiles[0].GetBiome(180) == node.NeighbouringTiles[1].GetBiome(0))
+            if (node.NeighbouringTiles[0].GetBiome(90) == node.NeighbouringTiles[1].GetBiome(270))
             {
-                return node.NeighbouringTiles[0].GetBiome(180);
+                return node.NeighbouringTiles[0].GetBiome(90);
             }
             else
             {
@@ -151,7 +172,7 @@ public class CalculatePoints : MonoBehaviour
             {
                 for (int z = 0; z < 2; z++)
                 {
-                    if (node.z - z < 0 || node.z == horizontalNodes.GetLength(1) - 1 || node.x + x >= horizontalNodes.GetLength(0) || verticalNodes.GetLength(11, 56m, 53kg, lang zwart haar, bruine ogen) == 0)
+                    if (node.z - z < 0 || node.z - z > horizontalNodes.GetLength(1) - 1)
                     {
                         continue;
                     }
@@ -162,14 +183,19 @@ public class CalculatePoints : MonoBehaviour
 
                     if (z == 0)
                     {
-                        biome = horizontalNode.NeighbouringTiles[0].GetBiome(0);
+                        biome = horizontalNode.NeighbouringTiles[0].GetBiome(180);
                     }
                     else if (z == 1)
                     {
-                        horizontalNode.NeighbouringTiles[1].GetBiome(180);
+                        biome = horizontalNode.NeighbouringTiles[1].GetBiome(0);
                     }
 
-                    if (biome == node.biome && !closedNodes.Contains(horizontalNode))
+                    if(biome != node.biome)
+                    {
+                        continue;
+                    }
+                    
+                    if (horizontalNode.biome != TileData.Triangle.Biome.Null)
                     {
                         //success!
                         neighbouringNodes.Add(horizontalNode);
@@ -192,7 +218,7 @@ public class CalculatePoints : MonoBehaviour
             {
                 for (int z = 0; z < 2; z++)
                 {
-                    if (node.x - x < 0 || node.x == horizontalNodes.GetLength(0) - 1 || node.z + z >= verticalNodes.GetLength(1) || horizontalNodes.GetLength(0) == 0)
+                    if (node.x - x < 0 || node.x - x > verticalNodes.GetLength(0) - 1)
                     {
                         continue;
                     }
@@ -201,16 +227,21 @@ public class CalculatePoints : MonoBehaviour
 
                     TileData.Triangle.Biome biome = TileData.Triangle.Biome.Null;
 
-                    if (z == 0)
+                    if (x == 0)
                     {
-                        biome = verticalNode.NeighbouringTiles[0].GetBiome(0);
+                        biome = verticalNode.NeighbouringTiles[0].GetBiome(90);
                     }
-                    else if (z == 1)
+                    else if (x == 1)
                     {
-                        verticalNode.NeighbouringTiles[1].GetBiome(180);
+                        biome = verticalNode.NeighbouringTiles[1].GetBiome(270);
                     }
 
-                    if (biome == node.biome && !closedNodes.Contains(verticalNode))
+                    if(biome != node.biome)
+                    {
+                        continue;
+                    }
+
+                    if (verticalNode.biome != TileData.Triangle.Biome.Null)
                     {
                         //success!
                         neighbouringNodes.Add(verticalNode);
@@ -245,7 +276,7 @@ public class CalculatePoints : MonoBehaviour
                     Node verticalNode = new Node();
                     verticalNode.NeighbouringTiles.Add(tiles[x, z]);
                     verticalNode.NeighbouringTiles.Add(tiles[x + 1, z]);
-                    verticalNode.Orientation = Node.NodeOrientation.Horizontal;
+                    verticalNode.Orientation = Node.NodeOrientation.Vertical;
                     verticalNode.x = x;
                     verticalNode.z = z;
 
@@ -259,7 +290,7 @@ public class CalculatePoints : MonoBehaviour
                     Node horizontalNode = new Node();
                     horizontalNode.NeighbouringTiles.Add(tiles[x, z]);
                     horizontalNode.NeighbouringTiles.Add(tiles[x, z + 1]);
-                    horizontalNode.Orientation = Node.NodeOrientation.Vertical;
+                    horizontalNode.Orientation = Node.NodeOrientation.Horizontal;
                     horizontalNode.x = x;
                     horizontalNode.z = z;
 

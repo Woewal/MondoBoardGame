@@ -4,10 +4,12 @@ using System.Linq;
 
 public class Tile
 {
+    public static float tileSize = 1;
+
     static int amountOfTiles;
 
-    public int X;
-    public int Z;
+    public int x;
+    public int z;
 
     public int rotation;
 
@@ -65,5 +67,19 @@ public class Tile
         {
             return TileData.Triangle.Biome.Desert;
         }
+    }
+
+    public static Tile CreateTile(Target target)
+    {
+        var newTile = new Tile();
+        var coordinate = target.GetCoordinate();
+
+        newTile.x = coordinate.X; newTile.z = coordinate.Z;
+
+        newTile.rotation = target.GetRotation();
+
+        newTile.tileData = target.TileData;
+
+        return newTile;
     }
 }

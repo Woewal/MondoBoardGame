@@ -27,6 +27,21 @@ public class Target : MonoBehaviour {
             return Mathf.Round(transform.rotation.eulerAngles.y / 90) * 90;
         }
     }
+
+    public Coordinate GetCoordinate()
+    {
+        int x = (int)(Mathf.Round(transform.position.x / Tile.tileSize) * Tile.tileSize);
+        int z = (int)(Mathf.Round(transform.position.z / Tile.tileSize) * Tile.tileSize);
+
+        return new Coordinate(x, z);
+    }
+
+
+    public int GetRotation()
+    {
+        return (int)Mathf.Round(Rotation / 90) * 90;
+    }
+
     public float RotationDebug
     {
         get
