@@ -139,7 +139,7 @@ public class CalculatePoints : MonoBehaviour
     {
         if (node.Orientation == Node.NodeOrientation.Horizontal)
         {
-            if (node.NeighbouringTiles[0].GetBiome(180) == node.NeighbouringTiles[1].GetBiome(0))
+            if (node.NeighbouringTiles[0] != null && node.NeighbouringTiles[1] != null && node.NeighbouringTiles[0].GetBiome(180) == node.NeighbouringTiles[1].GetBiome(0))
             {
                 return node.NeighbouringTiles[0].GetBiome(180);
             }
@@ -150,7 +150,7 @@ public class CalculatePoints : MonoBehaviour
         }
         if (node.Orientation == Node.NodeOrientation.Vertical)
         {
-            if (node.NeighbouringTiles[0].GetBiome(90) == node.NeighbouringTiles[1].GetBiome(270))
+            if (node.NeighbouringTiles[0] != null && node.NeighbouringTiles[1] != null && node.NeighbouringTiles[0].GetBiome(90) == node.NeighbouringTiles[1].GetBiome(270))
             {
                 return node.NeighbouringTiles[0].GetBiome(90);
             }

@@ -45,8 +45,11 @@ public class DebugTileGenerator : MonoBehaviour {
         {
             for (int z = 0; z < islandManager.tiles.GetLength(1); z++)
             {
-                islandManager.tiles[x, z].x += Mathf.Abs(lowestX);
-                islandManager.tiles[x, z].z += Mathf.Abs(lowestZ);
+                if(islandManager.tiles[x, z] != null)
+                {
+                    islandManager.tiles[x, z].x += Mathf.Abs(lowestX);
+                    islandManager.tiles[x, z].z += Mathf.Abs(lowestZ);
+                }
             }
         }
     }
