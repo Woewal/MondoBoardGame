@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Tile", menuName = "Test/Tile", order = 1)]
+[CreateAssetMenu(fileName = "Tile", menuName = "Data/Tile", order = 1)]
 public class TileData : ScriptableObject {
     public List<Triangle> triangles;
-    [SerializeField] bool includePassiveVulcano;
-    [SerializeField] bool includeActiveVulcano;
-    [SerializeField] bool includeAnimal;
+    public bool includePassiveVulcano;
+    public bool includeActiveVulcano;
+
+    public AnimalData animal;
+    public Triangle.Side animalSide;
 	
     [System.Serializable]
     public class Triangle

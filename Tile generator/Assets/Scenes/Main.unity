@@ -13,7 +13,7 @@ OcclusionCullingSettings:
 --- !u!104 &2
 RenderSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 8
+  serializedVersion: 9
   m_Fog: 0
   m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   m_FogMode: 3
@@ -39,6 +39,7 @@ RenderSettings:
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
   m_IndirectSpecularColor: {r: 0.18028334, g: 0.22571328, b: 0.3069217, a: 1}
+  m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -54,11 +55,10 @@ LightmapSettings:
     m_EnableBakedLightmaps: 1
     m_EnableRealtimeLightmaps: 1
   m_LightmapEditorSettings:
-    serializedVersion: 9
+    serializedVersion: 10
     m_Resolution: 2
     m_BakeResolution: 40
-    m_TextureWidth: 1024
-    m_TextureHeight: 1024
+    m_AtlasSize: 1024
     m_AO: 0
     m_AOMaxDistance: 1
     m_CompAOExponent: 1
@@ -207,6 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68f9b669b47a2414c803eb5993b4af9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  run: 1
 --- !u!114 &605386219
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,6 +326,19 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0984579a14266cb46b3db660d339258f, type: 2}
   - {fileID: 11400000, guid: f89fcd8784f20b84380f1ff8184520a0, type: 2}
   - {fileID: 11400000, guid: 25befdedb7d015d48abf923029ab48d9, type: 2}
+  - {fileID: 11400000, guid: bc580f28b9cbc7c4da5e5976461fa1ac, type: 2}
+  - {fileID: 11400000, guid: 927b6f40a90b2374da5aedc94355d703, type: 2}
+  - {fileID: 11400000, guid: c8b4766e59287044c8a64afadffa758f, type: 2}
+  - {fileID: 11400000, guid: a7c6ab6cff6254f438ec0d8ffb83f5b1, type: 2}
+  - {fileID: 11400000, guid: f0cfe7fe0ea26604aae9dcc2ca403294, type: 2}
+  - {fileID: 11400000, guid: 18445b771ccd01f41a7f24fccd0253d3, type: 2}
+  - {fileID: 11400000, guid: 50cfd8f63fb2d8b4fa6c9b7969f74351, type: 2}
+  - {fileID: 11400000, guid: e8de411aacbf95b43a84bb0c2c8affe1, type: 2}
+  - {fileID: 11400000, guid: 6f12de4b50ee5ce4bbefa85c418abd85, type: 2}
+  - {fileID: 11400000, guid: bfb512ee8fbbd344c8484f3ea0de7033, type: 2}
+  - {fileID: 11400000, guid: accb940bb010d8746bfc45c5ab6a2513, type: 2}
+  - {fileID: 11400000, guid: 6cd4cfc0eaf9b734cabd1180dbf4a69e, type: 2}
+  - {fileID: 11400000, guid: 308cfca8be585d7499381b946d5e1b3b, type: 2}
 --- !u!4 &1884959853
 Transform:
   m_ObjectHideFlags: 0
@@ -365,6 +379,9 @@ MonoBehaviour:
   plainsObject:
   - {fileID: 1670201008015138, guid: 81f961a65eeb280408e5d21cd9448650, type: 2}
   - {fileID: 100000, guid: 2334f8c7f172cfc45ade5570ef118a38, type: 3}
+  waterObject:
+  - {fileID: 1118972415747866, guid: 708574105f7de014ab1bed7613b8c01b, type: 2}
+  - {fileID: 1506514071747772, guid: f53883505ba373a4289ffa42081fdd1b, type: 2}
 --- !u!114 &1884959855
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -376,3 +393,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c667ae44c8ab174abb946be3efc2bb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  run: 1

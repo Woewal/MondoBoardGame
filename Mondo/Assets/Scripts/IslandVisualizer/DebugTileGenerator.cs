@@ -9,7 +9,6 @@ public class DebugTileGenerator : MonoBehaviour {
     private void Awake()
     {
         islandManager = GetComponent<IslandManager>();
-        Debug.Log("mjyaam");
     }
 
     public void GenerateDebugTiles()

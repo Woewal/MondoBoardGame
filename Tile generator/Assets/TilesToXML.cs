@@ -7,8 +7,14 @@ using System.IO;
 
 public class TilesToXML : MonoBehaviour {
 
+    [SerializeField]
+    bool run = false;
+
 	public void ProcessTiles(List<TileData> tiles)
     {
+        if (!run)
+            return;
+
         XmlWriter xmlWriter = XmlWriter.Create(GetFilePath("Tiles"));
 
         xmlWriter.WriteStartDocument();
@@ -22,6 +28,10 @@ public class TilesToXML : MonoBehaviour {
             xmlWriter.WriteElementString("right", tile.triangles.Where(x => x.side == TileData.Triangle.Side.Right).First().biome.ToString());
             xmlWriter.WriteElementString("down", tile.triangles.Where(x => x.side == TileData.Triangle.Side.Down).First().biome.ToString());
             xmlWriter.WriteElementString("left", tile.triangles.Where(x => x.side == TileData.Triangle.Side.Left).First().biome.ToString());
+
+            if(tile.animal != null)
+                xmlWriter.WriteElementString("animal", tile.animal.biomeType.ToString());
+
             xmlWriter.WriteEndElement();
         }
         xmlWriter.WriteEndElement();

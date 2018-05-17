@@ -14,17 +14,19 @@ public class CalculatePoints : MonoBehaviour
     private List<Node> openNodes = new List<Node>();
     private List<Node> closedNodes = new List<Node>();
 
-    private List<Node> mistakeNodes = new List<Node>();
+    public List<Node> mistakeNodes = new List<Node>();
 
-    private List<Island> islands = new List<Island>();
-    
+    public List<Island> islands = new List<Island>();
+
     [SerializeField] Text scoreText;
     int mistakeAmount = 0;
 
+    private ScoreVisualizator scoreVisualizator;
 
     private void Start()
     {
         islandManager = GetComponent<IslandManager>();
+        scoreVisualizator = GetComponent<ScoreVisualizator>();
 
         if (islandManager.tiles == null)
             GenerateDebugTiles();
@@ -33,8 +35,10 @@ public class CalculatePoints : MonoBehaviour
         tiles = islandManager.tiles;
 
         CreateNodes();
-        
+
         Calculate();
+
+        StartCoroutine(scoreVisualizator.ShowPoints());
     }
 
     void GenerateDebugTiles()
@@ -45,14 +49,9 @@ public class CalculatePoints : MonoBehaviour
     private void Calculate()
     {
         SetAllNodeConnections();
-        
+
         GetIslands();
         scoreText.text = string.Format("Mistakes: {0}, Complete islands:{1}", mistakeAmount, islands.Count);
-
-        foreach(var island in islands)
-        {
-            Debug.Log(island.biome + " " + island.size);
-        }
     }
 
     void GetIslands()
@@ -66,9 +65,7 @@ public class CalculatePoints : MonoBehaviour
 
         //GetIsland(openNodes[0]);
     }
-
-    //Suffering is eternal
-
+    
     void GetIsland(Node node)
     {
         List<Node> openNeighbouringNodes = new List<Node>();
@@ -87,9 +84,9 @@ public class CalculatePoints : MonoBehaviour
                 return;
             }
 
-            foreach(var neighbour in nodes)
+            foreach (var neighbour in nodes)
             {
-                if(!closedNeighbouringNodes.Contains(neighbour))
+                if (!closedNeighbouringNodes.Contains(neighbour))
                 {
                     openNeighbouringNodes.Add(neighbour);
                 }
@@ -97,14 +94,14 @@ public class CalculatePoints : MonoBehaviour
                 closedNodes.Add(neighbour);
                 openNodes.Remove(neighbour);
             }
-            
+
             closedNeighbouringNodes.Add(openNeighbouringNodes[0]);
             openNeighbouringNodes.Remove(openNeighbouringNodes[0]);
         }
 
         var island = new Island();
         island.biome = node.biome;
-        island.size = closedNeighbouringNodes.Count;
+        island.nodes = closedNeighbouringNodes;
         islands.Add(island);
 
         closedNodes.Add(node);
@@ -120,7 +117,7 @@ public class CalculatePoints : MonoBehaviour
             {
                 openNodes.Remove(verticalNode);
                 closedNodes.Add(verticalNode);
-                mistakeAmount++;
+                mistakeNodes.Add(verticalNode);
             }
         }
         foreach (var horizontalNode in horizontalNodes)
@@ -130,7 +127,7 @@ public class CalculatePoints : MonoBehaviour
             {
                 openNodes.Remove(horizontalNode);
                 closedNodes.Add(horizontalNode);
-                mistakeAmount++;
+                mistakeNodes.Add(horizontalNode);
             }
         }
     }
@@ -190,11 +187,11 @@ public class CalculatePoints : MonoBehaviour
                         biome = horizontalNode.NeighbouringTiles[1].GetBiome(0);
                     }
 
-                    if(biome != node.biome)
+                    if (biome != node.biome)
                     {
                         continue;
                     }
-                    
+
                     if (horizontalNode.biome != TileData.Triangle.Biome.Null)
                     {
                         //success!
@@ -236,7 +233,7 @@ public class CalculatePoints : MonoBehaviour
                         biome = verticalNode.NeighbouringTiles[1].GetBiome(270);
                     }
 
-                    if(biome != node.biome)
+                    if (biome != node.biome)
                     {
                         continue;
                     }
@@ -302,7 +299,7 @@ public class CalculatePoints : MonoBehaviour
         }
     }
 
-    private class Node
+    public class Node
     {
         public enum NodeOrientation { Horizontal, Vertical }
         public NodeOrientation Orientation;
@@ -315,9 +312,16 @@ public class CalculatePoints : MonoBehaviour
         public List<Tile> NeighbouringTiles = new List<Tile>();
     }
 
-    private class Island
+    public class Island
     {
-        public int size;
+        public int Size
+        {
+            get
+            {
+                return nodes.Count;
+            }
+        }
+        public List<Node> nodes;
         public TileData.Triangle.Biome biome;
     }
 }

@@ -17,11 +17,14 @@ public class TileGenerator : MonoBehaviour
     [SerializeField] List<GameObject> desertObject;
     [SerializeField] List<GameObject> forestObject;
     [SerializeField] List<GameObject> plainsObject;
+    [SerializeField] List<GameObject> waterObject;
 
-    public GameObject GenerateTile(TileData tile)
+    public GameObject GenerateTile(TileData tileData)
     {
-        newTile = new GameObject(tile.name);
-        GenerateTriangles(tile.triangles);
+        newTile = new GameObject(tileData.name);
+        GenerateTriangles(tileData.triangles);
+
+        PlaceAnimal(newTile, tileData);
 
         return newTile;
     }
@@ -30,6 +33,7 @@ public class TileGenerator : MonoBehaviour
     {
         foreach (var triangle in triangles)
         {
+
             GameObject triangleGameObject = new GameObject("Triangle", typeof(MeshRenderer), typeof(MeshFilter));
 
             Mesh mesh = triangleGameObject.GetComponent<MeshFilter>().mesh;
@@ -40,6 +44,15 @@ public class TileGenerator : MonoBehaviour
 
             var meshRenderer = triangleGameObject.GetComponent<MeshRenderer>();
             meshRenderer.material = GetMaterial(triangle.biome);
+
+            /*Vector2[] uvPoints = new Vector2[]
+            {
+                new Vector2(points[0].)
+            };*/
+
+            mesh.uv = UnityEditor.Unwrapping.GeneratePerTriangleUV(mesh);
+
+            //mesh.uv = uvPoints;
 
             SetObjects(triangle, points, triangleGameObject);
 
@@ -87,6 +100,19 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
+    void PlaceAnimal(GameObject parent, TileData tileData)
+    {
+        if (tileData.animal == null)
+            return;
+
+        float offset = 0.25f;
+
+        var animal = Instantiate(tileData.animal.model, parent.transform);
+        animal.transform.position = new Vector3(UnityEngine.Random.Range(offset, 1 - offset), 0.5f, UnityEngine.Random.Range(offset, 1 - offset));
+        animal.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        animal.transform.rotation = Quaternion.Euler(new Vector3(-38.48f, 0.2f, 146.59f));
+    }
+
     Material GetMaterial(TileData.Triangle.Biome biome)
     {
         if (biome == TileData.Triangle.Biome.Desert)
@@ -109,11 +135,6 @@ public class TileGenerator : MonoBehaviour
 
     void SetObjects(TileData.Triangle triangle, Vector3[] points, GameObject parent)
     {
-        if (triangle.biome == TileData.Triangle.Biome.Water)
-        {
-            return;
-        }
-
         float density = SetDensity(triangle);
         PoissonDiscSampler poisson = new PoissonDiscSampler(TileSize, TileSize, density);
         foreach (var sample in poisson.Samples())
@@ -121,7 +142,7 @@ public class TileGenerator : MonoBehaviour
             if (PointInTriangle(new Vector3(sample.x, 0, sample.y), points[0], points[1], points[2]))
             {
                 var objectGameObject = Instantiate(GetObject(triangle.biome), parent.transform);
-                objectGameObject.transform.Rotate(new Vector3(0, UnityEngine.Random.Range(0,360), 0));
+                objectGameObject.transform.Rotate(new Vector3(0, UnityEngine.Random.Range(0, 360), 0));
                 objectGameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
                 objectGameObject.transform.position = new Vector3(sample.x, 0, sample.y);
             }
@@ -143,7 +164,10 @@ public class TileGenerator : MonoBehaviour
         {
             return plainsObject[UnityEngine.Random.Range(0, plainsObject.Count)];
         }
-        return null;
+        else
+        {
+            return waterObject[UnityEngine.Random.Range(0, waterObject.Count)];
+        }
     }
 
     private float SetDensity(TileData.Triangle triangle)
@@ -154,7 +178,7 @@ public class TileGenerator : MonoBehaviour
         }
         else if (triangle.biome == TileData.Triangle.Biome.Forest)
         {
-            return 0.085f;
+            return 0.125f;
         }
         else if (triangle.biome == TileData.Triangle.Biome.Plains)
         {
@@ -162,7 +186,7 @@ public class TileGenerator : MonoBehaviour
         }
         else
         {
-            return 0.09f;
+            return 0.25f;
         }
     }
 

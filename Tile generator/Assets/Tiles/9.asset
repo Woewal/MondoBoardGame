@@ -17,9 +17,10 @@ MonoBehaviour:
   - side: 1
     biome: 2
   - side: 2
-    biome: 1
+    biome: 0
   - side: 3
     biome: 2
   includePassiveVulcano: 0
   includeActiveVulcano: 0
-  includeAnimal: 0
+  animal: {fileID: 11400000, guid: 7427d5b64815cbe428b42b4101e04e31, type: 2}
+  animalSide: 0

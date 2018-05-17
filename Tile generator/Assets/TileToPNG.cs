@@ -7,6 +7,9 @@ public class TileToPNG : MonoBehaviour
     Camera camera;
     public static TileToPNG Instance;
 
+    [SerializeField]
+    bool run = false;
+
     private void Start()
     {
         Instance = this;
@@ -16,28 +19,31 @@ public class TileToPNG : MonoBehaviour
 
     public IEnumerator GeneratePNGs(int amount)
     {
-        int index = 0;
-        do
+        if(run)
         {
-            camera.transform.position = new Vector3(index * TileGenerator.TileSize + TileGenerator.TileSize / 2 + 1 * index, camera.transform.position.y, TileGenerator.TileSize / 2);
+            int index = 0;
+            do
+            {
+                camera.transform.position = new Vector3(index * TileGenerator.TileSize + TileGenerator.TileSize / 2 + 1 * index, camera.transform.position.y, TileGenerator.TileSize / 2);
 
-            RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 24);
-            camera.targetTexture = rt;
-            Texture2D screenShot = new Texture2D(530, 530, TextureFormat.RGB24, false);
-            camera.Render();
-            RenderTexture.active = rt;
-            screenShot.ReadPixels(new Rect(Screen.width / 2 - 530 / 2, Screen.height / 2 - 530 / 2, Screen.width / 2 + 530 / 2, Screen.height / 2 + 530 / 2), 0, 0);
-            camera.targetTexture = null;
-            RenderTexture.active = null; // JC: added to avoid errors
-            Destroy(rt);
-            byte[] bytes = screenShot.EncodeToPNG();
-            string filename = ScreenShotName("Tile" + (index + 1));
-            System.IO.File.WriteAllBytes(filename, bytes);
+                RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 24);
+                camera.targetTexture = rt;
+                Texture2D screenShot = new Texture2D(530, 530, TextureFormat.RGB24, false);
+                camera.Render();
+                RenderTexture.active = rt;
+                screenShot.ReadPixels(new Rect(Screen.width / 2 - 530 / 2, Screen.height / 2 - 530 / 2, Screen.width / 2 + 530 / 2, Screen.height / 2 + 530 / 2), 0, 0);
+                camera.targetTexture = null;
+                RenderTexture.active = null; // JC: added to avoid errors
+                Destroy(rt);
+                byte[] bytes = screenShot.EncodeToPNG();
+                string filename = ScreenShotName("Tile" + (index + 1));
+                System.IO.File.WriteAllBytes(filename, bytes);
 
-            index++;
-            yield return null;
+                index++;
+                yield return null;
+            }
+            while (index < amount);
         }
-        while (index < amount);
     }
 
     public static string ScreenShotName(string name)

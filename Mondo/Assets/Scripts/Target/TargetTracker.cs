@@ -24,6 +24,8 @@ public class TargetTracker : MonoBehaviour
 
     public void AddTarget(Target target)
     {
+        Debug.Log("Adding target");
+
         if (!FoundTargets.Contains(target))
         {
             FoundTargets.Add(target);

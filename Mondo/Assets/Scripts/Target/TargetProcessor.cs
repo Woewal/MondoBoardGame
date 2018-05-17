@@ -29,6 +29,8 @@ public class TargetProcessor : MonoBehaviour {
         {
             for (int z = 0; z < tiles.GetLength(1); z++)
             {
+                if (tiles[x, z] == null)
+                    continue;
                 tiles[x, z].x += Mathf.Abs(lowestX);
                 tiles[x, z].z += Mathf.Abs(lowestZ);
             }

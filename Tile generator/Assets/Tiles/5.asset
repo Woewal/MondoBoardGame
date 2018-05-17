@@ -13,13 +13,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   triangles:
   - side: 0
-    biome: 0
+    biome: 3
   - side: 1
     biome: 2
   - side: 2
-    biome: 0
+    biome: 3
   - side: 3
     biome: 2
   includePassiveVulcano: 0
   includeActiveVulcano: 0
-  includeAnimal: 0
+  animal: {fileID: 0}
+  animalSide: 0

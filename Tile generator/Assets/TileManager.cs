@@ -24,11 +24,22 @@ public class TileManager : MonoBehaviour {
         {
             GenerateTile(tiles[i], i);
         }
+        //ExportTileData();
+    }
 
+    private void Update()
+    {
+        if(Input.GetButton("Fire1"))
+        {
+            ExportTiles();
+        }
+    }
+
+    private void ExportTiles()
+    {
         StartCoroutine(TileToPNG.Instance.GeneratePNGs(tiles.Count));
         xmlProcessor.ProcessTiles(tiles);
         ExportTilesToPrefab();
-        //ExportTileData();
     }
 
     private void GenerateTile(TileData tile, int index)
