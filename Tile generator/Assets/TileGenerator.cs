@@ -29,6 +29,7 @@ public class TileGenerator : MonoBehaviour
         return newTile;
     }
 
+    //Generates the GameObject for the triangles
     void GenerateTriangles(List<TileData.Triangle> triangles)
     {
         foreach (var triangle in triangles)
@@ -38,7 +39,7 @@ public class TileGenerator : MonoBehaviour
 
             Mesh mesh = triangleGameObject.GetComponent<MeshFilter>().mesh;
 
-            var points = GetPoints(triangle.side);
+            var points = GetTrianglePoints(triangle.side);
             mesh.vertices = points;
             mesh.triangles = new int[] { 0, 1, 2 };
 
@@ -54,13 +55,14 @@ public class TileGenerator : MonoBehaviour
 
             //mesh.uv = uvPoints;
 
-            SetObjects(triangle, points, triangleGameObject);
+            AddTerrainObstacles(triangle, points, triangleGameObject);
 
             triangleGameObject.transform.SetParent(newTile.transform);
         }
     }
 
-    Vector3[] GetPoints(TileData.Triangle.Side side)
+    //Gets the vertex coordinates based on the side
+    Vector3[] GetTrianglePoints(TileData.Triangle.Side side)
     {
         if (side == TileData.Triangle.Side.Up)
         {
@@ -80,7 +82,8 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    Vector2[] Get2DPoints(TileData.Triangle.Side side)
+    //Gets the 2D triangle points based on the triangle
+    Vector2[] GetTrianglePoints2D(TileData.Triangle.Side side)
     {
         if (side == TileData.Triangle.Side.Up)
         {
@@ -100,6 +103,7 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
+    //Places animal on the tile, animal is based on the tileData;
     void PlaceAnimal(GameObject parent, TileData tileData)
     {
         if (tileData.animal == null)
@@ -108,11 +112,12 @@ public class TileGenerator : MonoBehaviour
         float offset = 0.25f;
 
         var animal = Instantiate(tileData.animal.model, parent.transform);
-        animal.transform.position = new Vector3(UnityEngine.Random.Range(offset, 1 - offset), 0.5f, UnityEngine.Random.Range(offset, 1 - offset));
-        animal.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+        animal.transform.position = new Vector3(0.5f, 0.5f, 0.5f);
+        animal.transform.localScale = new Vector3(0.5f, 0.5f, 0.15f);
         animal.transform.rotation = Quaternion.Euler(new Vector3(-38.48f, 0.2f, 146.59f));
     }
 
+    //Gets material based on biome
     Material GetMaterial(TileData.Triangle.Biome biome)
     {
         if (biome == TileData.Triangle.Biome.Desert)
@@ -133,15 +138,16 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    void SetObjects(TileData.Triangle triangle, Vector3[] points, GameObject parent)
+    //Adds terrain obstacles within triangle based on biome
+    void AddTerrainObstacles(TileData.Triangle triangle, Vector3[] points, GameObject parent)
     {
-        float density = SetDensity(triangle);
+        float density = GetObstacleDensity(triangle);
         PoissonDiscSampler poisson = new PoissonDiscSampler(TileSize, TileSize, density);
         foreach (var sample in poisson.Samples())
         {
             if (PointInTriangle(new Vector3(sample.x, 0, sample.y), points[0], points[1], points[2]))
             {
-                var objectGameObject = Instantiate(GetObject(triangle.biome), parent.transform);
+                var objectGameObject = Instantiate(GetTerrainObstacles(triangle.biome), parent.transform);
                 objectGameObject.transform.Rotate(new Vector3(0, UnityEngine.Random.Range(0, 360), 0));
                 objectGameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
                 objectGameObject.transform.position = new Vector3(sample.x, 0, sample.y);
@@ -150,7 +156,8 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    GameObject GetObject(TileData.Triangle.Biome biome)
+    //Returns a random terrain obstacles based on biome;
+    GameObject GetTerrainObstacles(TileData.Triangle.Biome biome)
     {
         if (biome == TileData.Triangle.Biome.Desert)
         {
@@ -170,7 +177,8 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
-    private float SetDensity(TileData.Triangle triangle)
+    //Gets the obstacle density based on the biome, higher number means lower density
+    private float GetObstacleDensity(TileData.Triangle triangle)
     {
         if (triangle.biome == TileData.Triangle.Biome.Desert)
         {
@@ -190,6 +198,7 @@ public class TileGenerator : MonoBehaviour
         }
     }
 
+    //Check if point is within triangle;
     private bool PointInTriangle(Vector3 p, Vector3 p0, Vector3 p1, Vector3 p2)
     {
         var s = p0.z * p2.x - p0.x * p2.z + (p2.z - p0.z) * p.x + (p0.x - p2.x) * p.z;
