@@ -51,7 +51,6 @@ public class CalculatePoints : MonoBehaviour
         SetAllNodeConnections();
 
         GetIslands();
-        scoreText.text = string.Format("Mistakes: {0}, Complete islands:{1}", mistakeAmount, islands.Count);
     }
 
     void GetIslands()

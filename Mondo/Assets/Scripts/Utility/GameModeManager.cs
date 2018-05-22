@@ -8,5 +8,5 @@ public class GameModeManager : MonoBehaviour
     public bool countCompleteIslands = true;
     public int completeIslandPoints = 2;
     public bool countMisconnections = true;
-    public int misConnectionPoints = 1;
+    public int misConnectionPoints = -1;
 }

@@ -19,6 +19,8 @@ public class TileGenerator : MonoBehaviour
     [SerializeField] List<GameObject> plainsObject;
     [SerializeField] List<GameObject> waterObject;
 
+    [SerializeField] GameObject triangleMesh;
+
     public GameObject GenerateTile(TileData tileData)
     {
         newTile = new GameObject(tileData.name);
@@ -34,23 +36,19 @@ public class TileGenerator : MonoBehaviour
     {
         foreach (var triangle in triangles)
         {
+            GameObject triangleGameObject = Instantiate(triangleMesh);
 
-            GameObject triangleGameObject = new GameObject("Triangle", typeof(MeshRenderer), typeof(MeshFilter));
-
-            Mesh mesh = triangleGameObject.GetComponent<MeshFilter>().mesh;
+            Mesh mesh = triangleGameObject.GetComponentInChildren<MeshFilter>().mesh;
 
             var points = GetTrianglePoints(triangle.side);
-            mesh.vertices = points;
-            mesh.triangles = new int[] { 0, 1, 2 };
+            //mesh.vertices = points;
+            //mesh.triangles = new int[] { 0, 1, 2 };
 
-            var meshRenderer = triangleGameObject.GetComponent<MeshRenderer>();
+            var meshRenderer = triangleGameObject.GetComponentInChildren<MeshRenderer>();
             meshRenderer.material = GetMaterial(triangle.biome);
 
-            /*Vector2[] uvPoints = new Vector2[]
-            {
-                new Vector2(points[0].)
-            };*/
-
+            SetTriangleDirection(triangleGameObject, triangle.side);
+            
             mesh.uv = UnityEditor.Unwrapping.GeneratePerTriangleUV(mesh);
 
             //mesh.uv = uvPoints;
@@ -59,6 +57,22 @@ public class TileGenerator : MonoBehaviour
 
             triangleGameObject.transform.SetParent(newTile.transform);
         }
+    }
+
+    void SetTriangleDirection(GameObject triangleGameObject, TileData.Triangle.Side side)
+    {
+        int direction = 0;
+
+        if (side == TileData.Triangle.Side.Down)
+            direction = 180;
+        else if (side == TileData.Triangle.Side.Left)
+            direction = 270;
+        else if (side == TileData.Triangle.Side.Right)
+            direction = 90;
+        else if (side == TileData.Triangle.Side.Up)
+            direction = 0;
+
+        triangleGameObject.transform.rotation = Quaternion.Euler(new Vector3(0, direction, 0));
     }
 
     //Gets the vertex coordinates based on the side
@@ -112,8 +126,8 @@ public class TileGenerator : MonoBehaviour
         float offset = 0.25f;
 
         var animal = Instantiate(tileData.animal.model, parent.transform);
-        animal.transform.position = new Vector3(0.5f, 0.5f, 0.5f);
-        animal.transform.localScale = new Vector3(0.5f, 0.5f, 0.15f);
+        animal.transform.position = new Vector3(0f, 1f, 0f);
+        animal.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
         animal.transform.rotation = Quaternion.Euler(new Vector3(-38.48f, 0.2f, 146.59f));
     }
 
@@ -150,7 +164,7 @@ public class TileGenerator : MonoBehaviour
                 var objectGameObject = Instantiate(GetTerrainObstacles(triangle.biome), parent.transform);
                 objectGameObject.transform.Rotate(new Vector3(0, UnityEngine.Random.Range(0, 360), 0));
                 objectGameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-                objectGameObject.transform.position = new Vector3(sample.x, 0, sample.y);
+                objectGameObject.transform.position = new Vector3(sample.x -.5f, 0, sample.y -.5f);
             }
 
         }

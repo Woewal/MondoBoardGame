@@ -14,7 +14,7 @@ public class TileToPNG : MonoBehaviour
     {
         Instance = this;
         camera = GetComponent<Camera>();
-        camera.transform.position = new Vector3(TileGenerator.TileSize / 2, camera.transform.position.y, TileGenerator.TileSize / 2);
+        camera.transform.position = new Vector3(0, camera.transform.position.y, 0);
     }
 
     public IEnumerator GeneratePNGs(int amount)
@@ -24,7 +24,7 @@ public class TileToPNG : MonoBehaviour
             int index = 0;
             do
             {
-                camera.transform.position = new Vector3(index * TileGenerator.TileSize + TileGenerator.TileSize / 2 + 1 * index, camera.transform.position.y, TileGenerator.TileSize / 2);
+                camera.transform.position = new Vector3(index * TileGenerator.TileSize + 1 * index, camera.transform.position.y);
 
                 RenderTexture rt = new RenderTexture(Screen.width, Screen.height, 24);
                 camera.targetTexture = rt;
