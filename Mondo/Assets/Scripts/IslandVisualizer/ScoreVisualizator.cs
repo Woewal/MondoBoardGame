@@ -37,8 +37,9 @@ public class ScoreVisualizator : MonoBehaviour
     {
         foreach (var island in pointsCalculator.islands)
         {
-            Debug.Log("isaldn");
-            yield return StartCoroutine(islandCamera.PanTowardsLocation(2, Random.Range(0, 5) * Vector3.one));
+            yield return StartCoroutine(islandCamera.PanTowardsLocation(2, new Vector3(island.nodes[Random.Range(0, island.nodes.Count)].x, 0, island.nodes[Random.Range(0, island.nodes.Count)].z)));
+
+            AddScore(gameModeManager.completeIslandPoints, "Complete island");
 
             yield return new WaitForSeconds(1f);
         }
@@ -84,6 +85,8 @@ public class ScoreVisualizator : MonoBehaviour
         var indicator = Instantiate(pointIndicator);
         indicator.transform.position = islandCamera.transform.position + Vector3.up * .5f;
         indicator.SetPoints(amount, reason);
+
+        string positiveOrNegative;
 
         scoreText.text = string.Format("Score: {0}", score.ToString());
     }
