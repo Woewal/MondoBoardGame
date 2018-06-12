@@ -44,14 +44,13 @@ public class TileManager : MonoBehaviour {
 
     private void GenerateTile(TileData tile, int index)
     {
-        var tileObject = tileGenerator.GenerateTile(tile);
-        tileObject.transform.Translate(new Vector3(TileGenerator.TileSize * index + 1 * index, 0, 0));
+        var tileObject = tileGenerator.GenerateTile(tile, index);
         tileGameObjects.Add(tileObject);
     }
 
     private void ExportTilesToPrefab()
     {
-        foreach(var tile in tileGameObjects)
+        foreach(var tile in tileGenerator.prefabs)
         {
             string mlam = string.Format("Assets/Export/Prefabs/{0}.prefab", tile.name);
             PrefabUtility.CreatePrefab(mlam, tile);

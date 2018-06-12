@@ -31,6 +31,8 @@ public class ScoreVisualizator : MonoBehaviour
 
         if (gameModeManager.countMisconnections)
             yield return StartCoroutine(GetMisconnections());
+
+        islandCamera.GetComponentInChildren<TouchCamera>().enabled = true;
     }
 
     private IEnumerator GetCompleteIslands()
@@ -43,8 +45,6 @@ public class ScoreVisualizator : MonoBehaviour
 
             yield return new WaitForSeconds(1f);
         }
-
-        //AddScore(gameModeManager.completeIslandPoints);
 
         yield return new WaitForSeconds(1f);
     }
@@ -60,7 +60,7 @@ public class ScoreVisualizator : MonoBehaviour
             if (node.Orientation == CalculatePoints.Node.NodeOrientation.Horizontal)
             {
                 Debug.Log(string.Format("Panning to node {0}, {1}, {2}", node.x, node.z, "Horizontal"));
-                destination = new Vector3(node.x - .5f, 0, node.z + .5f);
+                destination = new Vector3(node.x, 0, node.z + .5f);
             }
             else
             {
@@ -70,7 +70,7 @@ public class ScoreVisualizator : MonoBehaviour
 
             yield return StartCoroutine(islandCamera.PanTowardsLocation(2, destination));
 
-            AddScore(gameModeManager.misConnectionPoints, "Bad connection");
+            AddScore(gameModeManager.misConnectionPoints, "Biome mismatch");
 
             yield return new WaitForSeconds(1f);
         }
@@ -83,10 +83,8 @@ public class ScoreVisualizator : MonoBehaviour
         score += amount;
 
         var indicator = Instantiate(pointIndicator);
-        indicator.transform.position = islandCamera.transform.position + Vector3.up * .5f;
+        indicator.transform.position = islandCamera.transform.position;
         indicator.SetPoints(amount, reason);
-
-        string positiveOrNegative;
 
         scoreText.text = string.Format("Score: {0}", score.ToString());
     }

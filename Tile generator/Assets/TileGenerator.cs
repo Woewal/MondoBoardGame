@@ -21,12 +21,24 @@ public class TileGenerator : MonoBehaviour
 
     [SerializeField] GameObject triangleMesh;
 
-    public GameObject GenerateTile(TileData tileData)
+    [SerializeField] [Range(0.1f, 1)] float animalSize;
+
+    public List<GameObject> prefabs = new List<GameObject>();
+
+    public GameObject GenerateTile(TileData tileData, int index)
     {
         newTile = new GameObject(tileData.name);
         GenerateTriangles(tileData.triangles);
 
-        PlaceAnimal(newTile, tileData);
+        GameObject newTilePrefab = (GameObject)Instantiate(newTile);
+
+        newTile.transform.Translate(new Vector3(TileGenerator.TileSize * index + 1 * index, 0, 0));
+        newTilePrefab.transform.Translate(new Vector3(TileGenerator.TileSize * index + 1 * index, 0, 2));
+
+        PlaceAnimal(newTile, tileData, true);
+        PlaceAnimal(newTilePrefab, tileData, false);
+
+        prefabs.Add(newTilePrefab);
 
         return newTile;
     }
@@ -38,20 +50,12 @@ public class TileGenerator : MonoBehaviour
         {
             GameObject triangleGameObject = Instantiate(triangleMesh);
 
-            Mesh mesh = triangleGameObject.GetComponentInChildren<MeshFilter>().mesh;
-
             var points = GetTrianglePoints(triangle.side);
-            //mesh.vertices = points;
-            //mesh.triangles = new int[] { 0, 1, 2 };
 
             var meshRenderer = triangleGameObject.GetComponentInChildren<MeshRenderer>();
             meshRenderer.material = GetMaterial(triangle.biome);
 
             SetTriangleDirection(triangleGameObject, triangle.side);
-            
-            mesh.uv = UnityEditor.Unwrapping.GeneratePerTriangleUV(mesh);
-
-            //mesh.uv = uvPoints;
 
             AddTerrainObstacles(triangle, points, triangleGameObject);
 
@@ -118,17 +122,30 @@ public class TileGenerator : MonoBehaviour
     }
 
     //Places animal on the tile, animal is based on the tileData;
-    void PlaceAnimal(GameObject parent, TileData tileData)
+    void PlaceAnimal(GameObject parent, TileData tileData, bool shouldFloat)
     {
         if (tileData.animal == null)
             return;
 
         float offset = 0.25f;
 
-        var animal = Instantiate(tileData.animal.model, parent.transform);
-        animal.transform.position = new Vector3(0f, 1f, 0f);
-        animal.transform.localScale = new Vector3(0.15f, 0.15f, 0.15f);
-        animal.transform.rotation = Quaternion.Euler(new Vector3(-38.48f, 0.2f, 146.59f));
+        var animal = Instantiate(tileData.animal.model, parent.transform, false);
+        Debug.Log("MYes");
+        //animal.transform.position = parent.transform.position;
+
+        if(shouldFloat)
+        {
+            animal.transform.Translate(new Vector3(0, 3, -.1f));
+            animal.transform.localScale = new Vector3(animalSize, animalSize, animalSize);
+            animal.transform.rotation = Quaternion.Euler(new Vector3(-53.22f, 139.64f, 35.5f));
+        }
+        else
+        {
+            animal.transform.Translate(new Vector3(0, .1f, 0f));
+            animal.transform.localScale = new Vector3(animalSize / 1.3f, animalSize / 1.3f, animalSize / 1.3f);
+            animal.transform.rotation = Quaternion.Euler(new Vector3(0, 180f, 0));
+        }
+        
     }
 
     //Gets material based on biome

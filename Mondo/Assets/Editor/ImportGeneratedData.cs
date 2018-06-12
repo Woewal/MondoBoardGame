@@ -7,11 +7,12 @@ using System.Linq;
 using System;
 using Vuforia;
 
-public class ImportGeneratedData : ScriptableWizard {
+public class ImportGeneratedData : ScriptableWizard
+{
 
     [SerializeField] TextAsset xmlFile;
     [SerializeField] TargetCreator targetCreator;
-    [SerializeField] List<GameObject> tilePrefabs; 
+    [SerializeField] List<GameObject> tilePrefabs;
 
     XmlDocument xml;
 
@@ -23,7 +24,7 @@ public class ImportGeneratedData : ScriptableWizard {
 
     private void OnWizardCreate()
     {
-        if(targetCreator.tiles != null)
+        if (targetCreator.tiles != null)
         {
             targetCreator.tiles.Clear();
         }
@@ -33,37 +34,24 @@ public class ImportGeneratedData : ScriptableWizard {
         }
 
         XmlNodeList tiles = ReadXmlFile();
-        foreach(XmlNode tile in tiles)
+        
+        for(int tileIndex = 0; tileIndex < tilePrefabs.Count; tileIndex++)
         {
             TileData tileData = new TileData();
+            
+            XmlNodeList triangles = tiles[tileIndex].ChildNodes;
 
-            int triangleIndex = 0;
-            foreach(XmlNode triangle in tile.ChildNodes)
+            tileData.triangles[0].side = TileData.Triangle.Side.Up;
+            tileData.triangles[1].side = TileData.Triangle.Side.Right;
+            tileData.triangles[2].side = TileData.Triangle.Side.Down;
+            tileData.triangles[3].side = TileData.Triangle.Side.Left;
+
+            for(int i = 0; i < 4; i++)
             {
-                if(triangle.Name == "up")
-                {
-                    tileData.triangles[triangleIndex].side = TileData.Triangle.Side.Up;
-                    
-                }
-                else if(triangle.Name == "right")
-                {
-                    tileData.triangles[triangleIndex].side = TileData.Triangle.Side.Right;
-                }
-                else if (triangle.Name == "down")
-                {
-                    tileData.triangles[triangleIndex].side = TileData.Triangle.Side.Down;
-                }
-                else
-                {
-                    tileData.triangles[triangleIndex].side = TileData.Triangle.Side.Left;
-                }
-
-                tileData.triangles[triangleIndex].biome = (TileData.Triangle.Biome)Enum.Parse(typeof(TileData.Triangle.Biome), triangle.InnerText);
-
-                triangleIndex++;
+                tileData.triangles[i].biome = (TileData.Triangle.Biome)Enum.Parse(typeof(TileData.Triangle.Biome), triangles[i].InnerText);
             }
 
-            tileData.TilePrefab = tilePrefabs.Where(x => int.Parse(x.name) == int.Parse(tile.Attributes["id"].Value)).First();
+            tileData.TilePrefab = tilePrefabs[tileIndex];
 
             targetCreator.tiles.Add(tileData);
         }

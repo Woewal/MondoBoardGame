@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,6 +8,7 @@ public class IslandCamera : MonoBehaviour {
     public static IslandCamera instance;
     [SerializeField] float rotationSpeed = 1f;
     [SerializeField] AnimationCurve easing;
+    public bool allowUserInput = true;
 
     private void Start()
     {
