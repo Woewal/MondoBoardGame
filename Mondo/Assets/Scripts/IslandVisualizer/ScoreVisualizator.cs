@@ -8,6 +8,8 @@ public class ScoreVisualizator : MonoBehaviour
     IslandCamera islandCamera;
     GameModeManager gameModeManager;
 
+    [SerializeField] Canvas canvas;
+
     [SerializeField] Text scoreText;
     int score = 0;
 
@@ -43,10 +45,10 @@ public class ScoreVisualizator : MonoBehaviour
 
             AddScore(gameModeManager.completeIslandPoints, "Complete island");
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
     }
 
     private IEnumerator GetMisconnections()
@@ -72,18 +74,18 @@ public class ScoreVisualizator : MonoBehaviour
 
             AddScore(gameModeManager.misConnectionPoints, "Biome mismatch");
 
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(2f);
         }
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
     }
 
     private void AddScore(int amount, string reason)
     {
         score += amount;
 
-        var indicator = Instantiate(pointIndicator);
-        indicator.transform.position = islandCamera.transform.position;
+        var indicator = Instantiate(pointIndicator, canvas.transform);
+        indicator.transform.position = Camera.main.WorldToScreenPoint(islandCamera.transform.position) + Vector3.up * 1.5f;
         indicator.SetPoints(amount, reason);
 
         scoreText.text = string.Format("Score: {0}", score.ToString());

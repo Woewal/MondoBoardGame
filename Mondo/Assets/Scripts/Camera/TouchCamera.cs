@@ -19,8 +19,6 @@ public class TouchCamera : MonoBehaviour {
 
     void Update() {
 
-        Debug.Log(Input.touchCount);
-
 		if (Input.touchCount == 0) {
 			oldTouchPositions[0] = null;
 			oldTouchPositions[1] = null;
