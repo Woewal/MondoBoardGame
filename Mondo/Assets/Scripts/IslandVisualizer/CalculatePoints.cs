@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using System.Linq;
+using System;
 
 public class CalculatePoints : MonoBehaviour
 {
@@ -17,6 +19,8 @@ public class CalculatePoints : MonoBehaviour
     public List<Node> mistakeNodes = new List<Node>();
 
     public List<Island> islands = new List<Island>();
+
+    public List<EmptyTile> missingTiles = new List<EmptyTile>();
 
     [SerializeField] Text scoreText;
     int mistakeAmount = 0;
@@ -49,8 +53,26 @@ public class CalculatePoints : MonoBehaviour
     private void Calculate()
     {
         SetAllNodeConnections();
-
+        GetMissingTiles();
         GetIslands();
+    }
+
+    private void GetMissingTiles()
+    {
+        for (int x = 0; x < tiles.GetLength(0); x++)
+        {
+            for(int z = 0; z < tiles.GetLength(1); z++)
+            {
+                if(tiles[x,z] == null)
+                {
+                    var emptyTile = new EmptyTile();
+                    emptyTile.x = x;
+                    emptyTile.z = z;
+
+                    missingTiles.Add(emptyTile);
+                }
+            }
+        }
     }
 
     void GetIslands()
@@ -64,7 +86,7 @@ public class CalculatePoints : MonoBehaviour
 
         //GetIsland(openNodes[0]);
     }
-    
+
     void GetIsland(Node node)
     {
         List<Node> openNeighbouringNodes = new List<Node>();
@@ -101,7 +123,9 @@ public class CalculatePoints : MonoBehaviour
         var island = new Island();
         island.biome = node.biome;
         island.nodes = closedNeighbouringNodes;
-        islands.Add(island);
+
+        if(island.nodes.Where(x => x.isFullNode == true).ToList().Count > 0)
+            islands.Add(island);
 
         closedNodes.Add(node);
         openNodes.Remove(node);
@@ -111,6 +135,8 @@ public class CalculatePoints : MonoBehaviour
     {
         foreach (var verticalNode in verticalNodes)
         {
+            if (!verticalNode.isFullNode)
+                continue;
             verticalNode.biome = CheckNodeConnection(verticalNode);
             if (verticalNode.biome == TileData.Triangle.Biome.Null)
             {
@@ -121,6 +147,9 @@ public class CalculatePoints : MonoBehaviour
         }
         foreach (var horizontalNode in horizontalNodes)
         {
+            if (!horizontalNode.isFullNode)
+                continue;
+
             horizontalNode.biome = CheckNodeConnection(horizontalNode);
             if (horizontalNode.biome == TileData.Triangle.Biome.Null)
             {
@@ -260,18 +289,34 @@ public class CalculatePoints : MonoBehaviour
 
     private void CreateNodes()
     {
-        verticalNodes = new Node[tiles.GetLength(0) - 1, tiles.GetLength(1)];
-        horizontalNodes = new Node[tiles.GetLength(0), tiles.GetLength(1) - 1];
+        verticalNodes = new Node[tiles.GetLength(0) + 1, tiles.GetLength(1)];
+        horizontalNodes = new Node[tiles.GetLength(0), tiles.GetLength(1) + 1];
 
-        for (int x = 0; x < tiles.GetLength(0); x++)
+        for (int x = 0; x < tiles.GetLength(0) + 1; x++)
         {
-            for (int z = 0; z < tiles.GetLength(1); z++)
+            for (int z = 0; z < tiles.GetLength(1) + 1; z++)
             {
-                if (x < tiles.GetLength(0) - 1)
+                if (x < tiles.GetLength(0) + 1)
                 {
                     Node verticalNode = new Node();
-                    verticalNode.NeighbouringTiles.Add(tiles[x, z]);
-                    verticalNode.NeighbouringTiles.Add(tiles[x + 1, z]);
+
+                    if (x > 0)
+                    {
+                        if (tiles[x - 1, z] != null)
+                            verticalNode.NeighbouringTiles.Add(tiles[x - 1, z]);
+                    }
+
+                    if (x < tiles.GetLength(0) + 1)
+                    {
+                        if (tiles[x, z] != null)
+                            verticalNode.NeighbouringTiles.Add(tiles[x, z]);
+                    }
+
+                    if (verticalNode.NeighbouringTiles.Count == 2)
+                        verticalNode.isFullNode = true;
+                    else
+                        verticalNode.isFullNode = false;
+
                     verticalNode.Orientation = Node.NodeOrientation.Vertical;
                     verticalNode.x = x;
                     verticalNode.z = z;
@@ -281,11 +326,27 @@ public class CalculatePoints : MonoBehaviour
                     openNodes.Add(verticalNode);
                 }
 
-                if (z < tiles.GetLength(1) - 1)
+                if (z < tiles.GetLength(1) + 1)
                 {
                     Node horizontalNode = new Node();
-                    horizontalNode.NeighbouringTiles.Add(tiles[x, z]);
-                    horizontalNode.NeighbouringTiles.Add(tiles[x, z + 1]);
+
+                    if (z > 0)
+                    {
+                        if(tiles[x, z - 1] != null)
+                            horizontalNode.NeighbouringTiles.Add(tiles[x, z - 1]);
+                    }
+
+                    if (x < tiles.GetLength(1) + 1)
+                    {
+                        if(tiles[x, z] != null)
+                            horizontalNode.NeighbouringTiles.Add(tiles[x, z]);
+                    }
+
+                    if (horizontalNode.NeighbouringTiles.Count == 2)
+                        horizontalNode.isFullNode = true;
+                    else
+                        horizontalNode.isFullNode = false;
+
                     horizontalNode.Orientation = Node.NodeOrientation.Horizontal;
                     horizontalNode.x = x;
                     horizontalNode.z = z;
@@ -306,9 +367,17 @@ public class CalculatePoints : MonoBehaviour
         public int x;
         public int z;
 
+        public bool isFullNode;
+
         public TileData.Triangle.Biome biome;
 
         public List<Tile> NeighbouringTiles = new List<Tile>();
+    }
+
+    public class EmptyTile
+    {
+        public int x;
+        public int z;
     }
 
     public class Island
