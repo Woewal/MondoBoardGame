@@ -20,10 +20,19 @@ public class IslandManager : MonoBehaviour
                 {
                     var placeholderIsland = Instantiate(tiles[x, z].tileData.TilePrefab, transform);
                     placeholderIsland.transform.position = new Vector3(x, 0, z);
-                    placeholderIsland.transform.Rotate(new Vector3(0, tiles[x,z].rotation, 0));
-                    placeholderIsland.AddComponent<TileVisualizer>().tile = tiles[x,z];
+                    placeholderIsland.transform.Rotate(new Vector3(0, tiles[x, z].rotation, 0));
+                    placeholderIsland.AddComponent<TileVisualizer>().tile = tiles[x, z];
                 }
             }
         }
     }
+
+    public void Start()
+    {
+        AudioManager.instance.Stop("MondoScanningScreen");
+        AudioManager.instance.Play("MondoScoreScreen_PLAY_ONCE");
+    }
+
+
+
 }

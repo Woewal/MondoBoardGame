@@ -33,10 +33,23 @@ public class TargetTracker : MonoBehaviour
             if (FoundTargets.Count == 24)
                 CompleteTracking();
         }
+
+        AudioManager.instance.Play("MondoTileScanned");
+
     }
 
     public void CompleteTracking()
     {
         targetProcessor.Process(FoundTargets);
     }
+
+    public void Start()
+    {
+        AudioManager.instance.Stop("MondoTimer");
+        AudioManager.instance.Play("MondoScanningScreen");
+    }
+
 }
+
+
+
