@@ -37,7 +37,7 @@ public class ScoreVisualizator : MonoBehaviour
         if (gameModeManager.countMisconnections)
             yield return StartCoroutine(GetMisconnections());
 
-        islandCamera.GetComponentInChildren<TouchCamera>().enabled = true;
+        //islandCamera.GetComponentInChildren<TouchCamera>().enabled = true;
     }
 
     private IEnumerator GetCompleteIslands()

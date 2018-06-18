@@ -404,6 +404,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71799b989b1957c4d960a7ba54d0e2ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  triangleIndicator: {fileID: 1213220133060964, guid: 74381eadf8cf1ba4192f6c3a5dbdc98d,
+    type: 2}
+  canvas: {fileID: 835233991}
+  scoreText: {fileID: 77838457}
+  pointIndicator: {fileID: 114129851228836794, guid: dd3c6f0145f6c7d4bbadabf0431d63e0,
+    type: 2}
 --- !u!1 &143711780
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,7 +830,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
-  m_ReferencePixelsPerUnit: 100
+  m_ReferencePixelsPerUnit: 193.19
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
@@ -1263,6 +1269,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  allowUserInput: 1
 --- !u!1 &1938322812
 GameObject:
   m_ObjectHideFlags: 0
@@ -1380,11 +1387,11 @@ RectTransform:
   m_Father: {fileID: 835233992}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 330, y: -177}
-  m_SizeDelta: {x: 160, y: 30}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 1, y: 0}
+  m_AnchorMax: {x: 1, y: 0}
+  m_AnchoredPosition: {x: -10, y: 10}
+  m_SizeDelta: {x: 220.9, y: 94.8}
+  m_Pivot: {x: 1, y: 0}
 --- !u!114 &1939930013
 MonoBehaviour:
   m_ObjectHideFlags: 0
